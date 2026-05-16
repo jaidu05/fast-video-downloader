@@ -2,7 +2,10 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
+import { exec } from "child_process";
+import { promisify } from "util";
 
+const execAsync = promisify(exec);
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -30,56 +33,29 @@ app.post("/download", async (req, res) => {
       });
     }
 
-    // NEW Cobalt API endpoint (api.cobalt.tools)
-    const response = await fetch("https://api.cobalt.tools/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({
-        url: url.trim()
-      })
-    });
+    // yt-dlp se direct download URL nikalo
+    const command = `yt-dlp --no-playlist -g "${url.trim()}"`;
+    const { stdout } = await execAsync(command, { timeout: 30000 });
 
-    const data = await response.json();
-    console.log("API RESPONSE:", data);
+    const downloadUrl = stdout.trim().split("\n")[0];
 
-    // Cobalt new API: status "tunnel" or "redirect" = direct download link
-    if (data.status === "tunnel" || data.status === "redirect") {
+    if (downloadUrl && downloadUrl.startsWith("http")) {
       return res.json({
         success: true,
-        downloadUrl: data.url
+        downloadUrl: downloadUrl
       });
     }
 
-    // Picker: multiple quality/format options available
-    if (data.status === "picker" && data.picker && data.picker.length > 0) {
-      return res.json({
-        success: true,
-        downloadUrl: data.picker[0].url
-      });
-    }
-
-    // Error from Cobalt
-    if (data.status === "error") {
-      return res.status(400).json({
-        success: false,
-        error: data.error?.code || "Could not fetch media"
-      });
-    }
-
-    // Fallback
     return res.status(400).json({
       success: false,
-      error: "Unexpected response from download service"
+      error: "Could not fetch media URL"
     });
 
   } catch (error) {
-    console.error("SERVER ERROR:", error);
+    console.error("SERVER ERROR:", error.message);
     return res.status(500).json({
       success: false,
-      error: error.message
+      error: "Download failed. Try another URL."
     });
   }
 });
