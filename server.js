@@ -4,6 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { exec } from "child_process";
 import { promisify } from "util";
+import fs from "fs";
 
 const execAsync = promisify(exec);
 const app = express();
@@ -13,59 +14,75 @@ app.use(express.json());
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Serve frontend
 app.use(express.static(path.join(__dirname, "public")));
 
-// Home page
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// Download route
+// yt-dlp path find karo
+async function getYtDlpPath() {
+  const paths = [
+    "/usr/local/bin/yt-dlp",
+    "/usr/bin/yt-dlp",
+    path.join(__dirname, "node_modules", ".bin", "yt-dlp"),
+    "yt-dlp"
+  ];
+  for (const p of paths) {
+    try {
+      await execAsync(`${p} --version`);
+      console.log("yt-dlp found at:", p);
+      return p;
+    } catch (e) {}
+  }
+  return null;
+}
+
 app.post("/download", async (req, res) => {
   try {
     const { url } = req.body;
 
     if (!url) {
-      return res.status(400).json({
-        success: false,
-        error: "URL required"
+      return res.status(400).json({ success: false, error: "URL required" });
+    }
+
+    const ytDlpPath = await getYtDlpPath();
+    
+    if (!ytDlpPath) {
+      return res.status(500).json({ 
+        success: false, 
+        error: "yt-dlp not found on server" 
       });
     }
 
-    // yt-dlp se direct download URL nikalo
-    const command = `yt-dlp --no-playlist -g "${url.trim()}"`;
-    const { stdout } = await execAsync(command, { timeout: 30000 });
+    console.log("Downloading:", url);
+    
+    // Instagram ke liye cookies bypass + user agent
+    const command = `${ytDlpPath} --no-playlist --no-warnings -g --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" "${url.trim()}"`;
+    
+    const { stdout, stderr } = await execAsync(command, { timeout: 60000 });
+    console.log("stdout:", stdout);
+    console.log("stderr:", stderr);
 
     const downloadUrl = stdout.trim().split("\n")[0];
 
     if (downloadUrl && downloadUrl.startsWith("http")) {
-      return res.json({
-        success: true,
-        downloadUrl: downloadUrl
-      });
+      return res.json({ success: true, downloadUrl });
     }
 
-    return res.status(400).json({
-      success: false,
-      error: "Could not fetch media URL"
-    });
+    return res.status(400).json({ success: false, error: "Could not extract URL" });
 
   } catch (error) {
-    console.error("SERVER ERROR:", error.message);
-    return res.status(500).json({
-      success: false,
-      error: "Download failed. Try another URL."
+    console.error("ERROR:", error.message);
+    console.error("STDERR:", error.stderr);
+    return res.status(500).json({ 
+      success: false, 
+      error: error.stderr || error.message 
     });
   }
 });
 
-// Health check
-app.get("/health", (req, res) => {
-  res.json({ status: "ok" });
-});
+app.get("/health", (req, res) => res.json({ status: "ok" }));
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => {
-  console.log("✅ Server running on", PORT);
-});
+app.listen(PORT, () => console.log("✅ Server running on", PORT));
