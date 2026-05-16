@@ -27,22 +27,32 @@ app.post("/download", (req, res) => {
   const isPinterest = trimmedUrl.includes("pinterest.com") || trimmedUrl.includes("pin.it");
 
   let formatFlag = `-f "bestvideo+bestaudio/best"`;
-  if (isYouTube) formatFlag = `-f "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best"`;
+  if (isYouTube) formatFlag = `-f "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best"`;
   if (isPinterest) formatFlag = `-f "best[ext=mp4]/best"`;
 
-  const cmd = `"${ytdlp}" --no-playlist --ffmpeg-location "${ffmpeg}" ${formatFlag} --merge-output-format mp4 -o "${tmpFile}" "${trimmedUrl}" --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36" --no-check-certificate`;
+  // YouTube ke liye extra flags
+  const youtubeFlags = isYouTube
+    ? `--extractor-args "youtube:player_client=android" --no-check-certificate`
+    : `--no-check-certificate`;
+
+  const cmd = `"${ytdlp}" --no-playlist --ffmpeg-location "${ffmpeg}" ${formatFlag} --merge-output-format mp4 -o "${tmpFile}" "${trimmedUrl}" --user-agent "Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 Chrome/120.0.0.0 Mobile Safari/537.36" ${youtubeFlags}`;
 
   console.log("Downloading:", trimmedUrl);
 
   exec(cmd, { timeout: 180000 }, (error, stdout, stderr) => {
+    console.log("STDOUT:", stdout);
+    console.log("STDERR:", stderr);
+
     if (error) {
-      console.error("ERROR:", stderr);
+      console.error("ERROR:", error.message);
       if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
       return res.status(500).json({ success: false, error: "Download failed. Try another URL." });
     }
+
     if (!fs.existsSync(tmpFile)) {
       return res.status(500).json({ success: false, error: "File not created" });
     }
+
     res.download(tmpFile, "video.mp4", (err) => {
       fs.unlink(tmpFile, () => {});
       if (err) console.error("Send error:", err.message);
