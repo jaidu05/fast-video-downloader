@@ -1,14 +1,23 @@
 import express from "express";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+// Path setup
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve frontend
+app.use(express.static(path.join(__dirname, "public")));
+
 // Home route
 app.get("/", (req, res) => {
-  res.send("Fast Video Downloader Backend Running 🚀");
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // Download route
@@ -37,7 +46,7 @@ app.post("/download", async (req, res) => {
 
     const data = await response.json();
 
-    // Success response
+    // Success
     if (data.url) {
       return res.json({
         success: true,
@@ -45,7 +54,7 @@ app.post("/download", async (req, res) => {
       });
     }
 
-    // If API fails
+    // API error
     return res.status(400).json({
       success: false,
       error: data.error || "Failed to fetch video"
@@ -68,8 +77,9 @@ app.get("/health", (req, res) => {
   });
 });
 
+// Port
 const PORT = process.env.PORT || 10000;
 
 app.listen(PORT, () => {
-  console.log("Server running on port", PORT);
+  console.log("✅ Server running on port", PORT);
 });
