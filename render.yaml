@@ -3,8 +3,8 @@ services:
     name: fast-video-downloader
     env: node
     plan: free
-    buildCommand: npm install
+    buildCommand: npm install && curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o ./yt-dlp && chmod +x ./yt-dlp
     startCommand: node server.js
     envVars:
       - key: NODE_VERSION
-        value: 20
+        value: 18
