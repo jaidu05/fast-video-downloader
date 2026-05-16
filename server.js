@@ -1,15 +1,11 @@
-import express from "express";
-import cors from "cors";
-import path from "path";
-import { fileURLToPath } from "url";
-import YTDlpWrap from "yt-dlp-wrap";
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
+const { exec } = require("child_process");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -17,58 +13,33 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// yt-dlp-wrap setup — binary auto download
-const ytDlpWrap = new YTDlpWrap();
+app.post("/download", (req, res) => {
+  const { url } = req.body;
 
-// Server start hone pe yt-dlp binary download karo
-async function setupYtDlp() {
-  try {
-    console.log("Downloading yt-dlp binary...");
-    await YTDlpWrap.downloadFromGithub();
-    console.log("✅ yt-dlp ready!");
-  } catch (err) {
-    console.error("yt-dlp setup failed:", err.message);
+  if (!url) {
+    return res.status(400).json({ success: false, error: "URL required" });
   }
-}
 
-app.post("/download", async (req, res) => {
-  try {
-    const { url } = req.body;
+  const command = `yt-dlp --no-playlist -g "${url.trim()}"`;
 
-    if (!url) {
-      return res.status(400).json({ success: false, error: "URL required" });
+  exec(command, { timeout: 60000 }, (error, stdout, stderr) => {
+    if (error) {
+      console.error("ERROR:", error.message);
+      console.error("STDERR:", stderr);
+      return res.status(500).json({ success: false, error: stderr || error.message });
     }
 
-    console.log("Fetching URL:", url);
-
-    const output = await ytDlpWrap.execPromise([
-      url.trim(),
-      "--no-playlist",
-      "--get-url",
-      "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-    ]);
-
-    const downloadUrl = output.trim().split("\n")[0];
+    const downloadUrl = stdout.trim().split("\n")[0];
 
     if (downloadUrl && downloadUrl.startsWith("http")) {
       return res.json({ success: true, downloadUrl });
     }
 
     return res.status(400).json({ success: false, error: "Could not extract URL" });
-
-  } catch (error) {
-    console.error("ERROR:", error.message);
-    return res.status(500).json({
-      success: false,
-      error: "Download failed: " + error.message
-    });
-  }
+  });
 });
 
 app.get("/health", (req, res) => res.json({ status: "ok" }));
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, async () => {
-  console.log("✅ Server running on", PORT);
-  await setupYtDlp();
-});
+app.listen(PORT, () => console.log("Server running on port", PORT));
