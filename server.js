@@ -28,16 +28,15 @@ app.post("/download", async (req, res) => {
     if (!url) {
       return res.status(400).json({
         success: false,
-        error: "Video URL is required"
+        error: "URL required"
       });
     }
 
-    // Request to API
-    const response = await fetch("https://co.wuk.sh/api/json", {
+    const response = await fetch("https://api.cobalt.tools/api/json", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
+        "Accept": "application/json",
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         url: url
@@ -46,7 +45,9 @@ app.post("/download", async (req, res) => {
 
     const data = await response.json();
 
-    // Success
+    console.log("API RESPONSE:", data);
+
+    // direct success
     if (data.url) {
       return res.json({
         success: true,
@@ -54,18 +55,26 @@ app.post("/download", async (req, res) => {
       });
     }
 
-    // API error
+    // picker response
+    if (data.picker && data.picker.length > 0) {
+      return res.json({
+        success: true,
+        downloadUrl: data.picker[0].url
+      });
+    }
+
+    // API returned error
     return res.status(400).json({
       success: false,
-      error: JSON.stringify(data)
+      error: data.error || "Could not fetch media"
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("SERVER ERROR:", error);
 
     return res.status(500).json({
       success: false,
-      error: "Server error"
+      error: error.message
     });
   }
 });
@@ -77,7 +86,7 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Port
+// Start server
 const PORT = process.env.PORT || 10000;
 
 app.listen(PORT, () => {
