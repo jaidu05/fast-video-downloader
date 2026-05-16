@@ -11,18 +11,57 @@ app.get("/", (req, res) => {
   res.send("Fast Video Downloader Backend Running 🚀");
 });
 
-// Test POST route
-app.post("/download", (req, res) => {
-  console.log("POST /download HIT");
+// Download route
+app.post("/download", async (req, res) => {
+  try {
+    const { url } = req.body;
 
-  return res.json({
-    success: true,
-    message: "Backend working perfectly",
-    body: req.body
-  });
+    if (!url) {
+      return res.status(400).json({
+        success: false,
+        error: "Video URL is required"
+      });
+    }
+
+    // Request to cobalt API
+    const response = await fetch("https://api.cobalt.tools/api/json", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({
+        url: url
+      })
+    });
+
+    const data = await response.json();
+
+    // Success response
+    if (data.url) {
+      return res.json({
+        success: true,
+        downloadUrl: data.url
+      });
+    }
+
+    // If API fails
+    return res.status(400).json({
+      success: false,
+      error: data.error || "Failed to fetch video"
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      error: "Server error"
+    });
+  }
 });
 
-// Health check
+// Health route
 app.get("/health", (req, res) => {
   res.json({
     status: "ok"
