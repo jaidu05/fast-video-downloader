@@ -2,11 +2,12 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const { exec } = require("child_process");
+const fs = require("fs");
+const os = require("os");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
@@ -15,34 +16,34 @@ app.get("/", (req, res) => {
 
 app.post("/download", (req, res) => {
   const { url } = req.body;
-
-  if (!url) {
-    return res.status(400).json({ success: false, error: "URL required" });
-  }
+  if (!url) return res.status(400).json({ success: false, error: "URL required" });
 
   const ytdlp = path.join(__dirname, "yt-dlp");
   const ffmpeg = path.join(__dirname, "ffmpeg");
+  const tmpFile = path.join(os.tmpdir(), `video_${Date.now()}.mp4`);
 
-  // Audio+Video merge karke best quality download
-  const command = `"${ytdlp}" --no-playlist --ffmpeg-location "${ffmpeg}" -f "bestvideo+bestaudio/best" --merge-output-format mp4 -g "${url.trim()}"`;
+  // Best video + best audio merge karke mp4 mein save karo
+  const cmd = `"${ytdlp}" --no-playlist --ffmpeg-location "${ffmpeg}" -f "bestvideo+bestaudio/best" --merge-output-format mp4 -o "${tmpFile}" "${url.trim()}"`;
 
-  exec(command, { timeout: 60000 }, (error, stdout, stderr) => {
-    console.log("stdout:", stdout);
-    console.log("stderr:", stderr);
+  console.log("Downloading:", url);
 
+  exec(cmd, { timeout: 120000 }, (error, stdout, stderr) => {
     if (error) {
-      console.error("ERROR:", error.message);
-      return res.status(500).json({ success: false, error: stderr || error.message });
+      console.error("ERROR:", stderr);
+      // Cleanup
+      if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
+      return res.status(500).json({ success: false, error: "Download failed. Try another URL." });
     }
 
-    const lines = stdout.trim().split("\n").filter(l => l.startsWith("http"));
-    const downloadUrl = lines[0];
-
-    if (downloadUrl) {
-      return res.json({ success: true, downloadUrl });
+    if (!fs.existsSync(tmpFile)) {
+      return res.status(500).json({ success: false, error: "File not created" });
     }
 
-    return res.status(400).json({ success: false, error: "Could not extract URL" });
+    // File seedha download karwa do
+    res.download(tmpFile, "video.mp4", (err) => {
+      fs.unlink(tmpFile, () => {});
+      if (err) console.error("Send error:", err.message);
+    });
   });
 });
 
