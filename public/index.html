@@ -34,7 +34,7 @@
     }
     .input-wrap {
       display: flex; align-items: center; background: #0d1117;
-      border: 1px solid #1e2a3a; border-radius: 12px; padding: 4px 12px; margin-bottom: 14px;
+      border: 1px solid #1e2a3a; border-radius: 12px; padding: 4px 12px; margin-bottom: 10px;
     }
     .input-wrap input {
       flex: 1; background: transparent; border: none; outline: none;
@@ -43,6 +43,21 @@
     .input-wrap input::placeholder { color: #4a5568; }
     .input-wrap i { color: #4a5568; cursor: pointer; font-size: 16px; }
     .input-wrap i:hover { color: #3b82f6; }
+
+    /* PLATFORM BADGE — sirf yeh naya hai */
+    #platformBadge {
+      display: none; align-items: center; gap: 8px;
+      border-radius: 10px; padding: 10px 14px;
+      font-size: 13px; font-weight: 600; margin-bottom: 12px;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+    #platformBadge.youtube   { background:#1a0a0a; border:1px solid #7f1d1d; color:#f87171; }
+    #platformBadge.instagram { background:#1a0a14; border:1px solid #831843; color:#f9a8d4; }
+    #platformBadge.pinterest { background:#1a0a0a; border:1px solid #7f1d1d; color:#fca5a5; }
+    #platformBadge.tiktok   { background:#0a1a1a; border:1px solid #134e4a; color:#5eead4; }
+    #platformBadge.facebook  { background:#0a0f1a; border:1px solid #1e3a5f; color:#93c5fd; }
+    #platformBadge i { font-size: 18px; }
 
     .btn-download {
       width: 100%; padding: 15px; background: #2563eb; color: #fff;
@@ -134,9 +149,13 @@
 
     <div class="download-box">
       <div class="input-wrap">
-        <input type="text" id="url" placeholder="Paste video URL here..." />
+        <input type="text" id="url" placeholder="Paste video URL here..." oninput="detectPlatform(this.value)" />
         <i class="fa-regular fa-clipboard" onclick="pasteURL()" title="Paste"></i>
       </div>
+
+      <!-- Platform detection badge -->
+      <div id="platformBadge"></div>
+
       <button class="btn-download" id="dlBtn" onclick="downloadVideo()">
         <i class="fa-solid fa-download"></i> Download Now
       </button>
@@ -278,10 +297,34 @@
   </footer>
 
   <script>
+    const platforms = {
+      youtube:   { check: u => u.includes("youtube.com") || u.includes("youtu.be"),  icon: "fa-brands fa-youtube",   cls: "youtube",   label: "YouTube Detected ✅" },
+      instagram: { check: u => u.includes("instagram.com"),                           icon: "fa-brands fa-instagram", cls: "instagram", label: "Instagram Detected ✅" },
+      pinterest: { check: u => u.includes("pinterest.com") || u.includes("pin.it"),  icon: "fa-brands fa-pinterest", cls: "pinterest", label: "Pinterest Detected ✅" },
+      tiktok:    { check: u => u.includes("tiktok.com"),                              icon: "fa-brands fa-tiktok",    cls: "tiktok",    label: "TikTok Detected ✅" },
+      facebook:  { check: u => u.includes("facebook.com") || u.includes("fb.watch"), icon: "fa-brands fa-facebook",  cls: "facebook",  label: "Facebook Detected ✅" },
+    };
+
+    function detectPlatform(val) {
+      const badge = document.getElementById('platformBadge');
+      const url = val.trim().toLowerCase();
+      if (!url) { badge.style.display = 'none'; return; }
+      for (const [key, p] of Object.entries(platforms)) {
+        if (p.check(url)) {
+          badge.className = p.cls;
+          badge.innerHTML = `<i class="${p.icon}"></i> ${p.label}`;
+          badge.style.display = 'flex';
+          return;
+        }
+      }
+      badge.style.display = 'none';
+    }
+
     async function pasteURL() {
       try {
         const text = await navigator.clipboard.readText();
         document.getElementById('url').value = text;
+        detectPlatform(text);
       } catch(e) {}
     }
 
@@ -312,7 +355,6 @@
         });
 
         if (response.ok && response.headers.get('content-type')?.includes('video')) {
-          // Direct file download
           const blob = await response.blob();
           const a = document.createElement('a');
           a.href = URL.createObjectURL(blob);
