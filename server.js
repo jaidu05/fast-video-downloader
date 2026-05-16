@@ -32,8 +32,8 @@ app.post("/download", async (req, res) => {
       });
     }
 
-    // Request to cobalt API
-    const response = await fetch("https://api.cobalt.tools/api/json", {
+    // Request to API
+    const response = await fetch("https://co.wuk.sh/api/json", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -57,7 +57,7 @@ app.post("/download", async (req, res) => {
     // API error
     return res.status(400).json({
       success: false,
-      error: data.error || "Failed to fetch video"
+      error: JSON.stringify(data)
     });
 
   } catch (error) {
