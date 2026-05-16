@@ -4,7 +4,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const app = express();
-
 app.use(cors());
 app.use(express.json());
 
@@ -31,8 +30,8 @@ app.post("/download", async (req, res) => {
       });
     }
 
-    // API request
-    const response = await fetch("https://co.wuk.sh/api/json", {
+    // NEW Cobalt API endpoint (api.cobalt.tools)
+    const response = await fetch("https://api.cobalt.tools/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -44,34 +43,40 @@ app.post("/download", async (req, res) => {
     });
 
     const data = await response.json();
-
     console.log("API RESPONSE:", data);
 
-    // Success
-    if (data.url) {
+    // Cobalt new API: status "tunnel" or "redirect" = direct download link
+    if (data.status === "tunnel" || data.status === "redirect") {
       return res.json({
         success: true,
         downloadUrl: data.url
       });
     }
 
-    // Picker support
-    if (data.picker && data.picker.length > 0) {
+    // Picker: multiple quality/format options available
+    if (data.status === "picker" && data.picker && data.picker.length > 0) {
       return res.json({
         success: true,
         downloadUrl: data.picker[0].url
       });
     }
 
-    // Fail
+    // Error from Cobalt
+    if (data.status === "error") {
+      return res.status(400).json({
+        success: false,
+        error: data.error?.code || "Could not fetch media"
+      });
+    }
+
+    // Fallback
     return res.status(400).json({
       success: false,
-      error: data.error || data.text || "Could not fetch media"
+      error: "Unexpected response from download service"
     });
 
   } catch (error) {
     console.error("SERVER ERROR:", error);
-
     return res.status(500).json({
       success: false,
       error: error.message
@@ -81,13 +86,10 @@ app.post("/download", async (req, res) => {
 
 // Health check
 app.get("/health", (req, res) => {
-  res.json({
-    status: "ok"
-  });
+  res.json({ status: "ok" });
 });
 
 const PORT = process.env.PORT || 10000;
-
 app.listen(PORT, () => {
   console.log("✅ Server running on", PORT);
 });
