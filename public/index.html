@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fast Video Downloader</title>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0f0f0f;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .box {
+      width: 90%;
+      max-width: 420px;
+      background: #1b1b1b;
+      padding: 25px;
+      border-radius: 18px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      font-size: 15px;
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #00c853;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    #result {
+      margin-top: 20px;
+    }
+
+    a {
+      color: #00e676;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="box">
+    <h1>Fast Video Downloader 🚀</h1>
+
+    <input
+      type="text"
+      id="url"
+      placeholder="Paste Instagram / Pinterest / TikTok URL"
+    />
+
+    <button onclick="downloadVideo()">
+      Download
+    </button>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    async function downloadVideo() {
+      const url = document.getElementById("url").value;
+      const result = document.getElementById("result");
+
+      result.innerHTML = "Processing...";
+
+      try {
+        const response = await fetch("/download", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ url })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          result.innerHTML = `
+            <p>Download Ready ✅</p>
+            <a href="${data.downloadUrl}" target="_blank">
+              Click Here To Download
+            </a>
+          `;
+        } else {
+          result.innerHTML = `
+            <p>${data.error || "Failed to download"}</p>
+          `;
+        }
+
+      } catch (error) {
+        result.innerHTML = `
+          <p>Something went wrong</p>
+        `;
+      }
+    }
+  </script>
+
+</body>
+</html>
