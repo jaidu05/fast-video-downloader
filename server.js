@@ -20,22 +20,25 @@ app.post("/download", (req, res) => {
     return res.status(400).json({ success: false, error: "URL required" });
   }
 
-  // yt-dlp project folder mein hai
   const ytdlp = path.join(__dirname, "yt-dlp");
-  const command = `"${ytdlp}" --no-playlist -g "${url.trim()}"`;
+  const ffmpeg = path.join(__dirname, "ffmpeg");
+
+  // Audio+Video merge karke best quality download
+  const command = `"${ytdlp}" --no-playlist --ffmpeg-location "${ffmpeg}" -f "bestvideo+bestaudio/best" --merge-output-format mp4 -g "${url.trim()}"`;
 
   exec(command, { timeout: 60000 }, (error, stdout, stderr) => {
     console.log("stdout:", stdout);
     console.log("stderr:", stderr);
-    
+
     if (error) {
       console.error("ERROR:", error.message);
       return res.status(500).json({ success: false, error: stderr || error.message });
     }
 
-    const downloadUrl = stdout.trim().split("\n")[0];
+    const lines = stdout.trim().split("\n").filter(l => l.startsWith("http"));
+    const downloadUrl = lines[0];
 
-    if (downloadUrl && downloadUrl.startsWith("http")) {
+    if (downloadUrl) {
       return res.json({ success: true, downloadUrl });
     }
 
