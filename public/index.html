@@ -4,127 +4,338 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fast Video Downloader</title>
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: #0f0f0f;
-      color: white;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0d1117; color: #fff; font-family: 'Segoe UI', Arial, sans-serif; min-height: 100vh; }
 
-    .box {
-      width: 90%;
-      max-width: 420px;
-      background: #1b1b1b;
-      padding: 25px;
-      border-radius: 18px;
-      text-align: center;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 24px; border-bottom: 1px solid #1e2a3a;
+      position: sticky; top: 0; background: #0d1117; z-index: 100;
     }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; }
+    .nav-logo i { color: #3b82f6; font-size: 22px; }
 
-    h1 {
-      margin-bottom: 20px;
-      font-size: 28px;
+    .hero { text-align: center; padding: 60px 24px 40px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #1e2a3a; border: 1px solid #2a3f57; border-radius: 999px;
+      padding: 8px 18px; font-size: 14px; color: #93c5fd; margin-bottom: 28px;
     }
+    .badge-dot { width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; }
+    .hero h1 { font-size: 38px; font-weight: 800; line-height: 1.2; margin-bottom: 20px; }
+    .hero h1 span { color: #3b82f6; }
+    .hero p { color: #8b9ab0; font-size: 16px; max-width: 380px; margin: 0 auto 40px; line-height: 1.6; }
 
-    input {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 10px;
-      margin-bottom: 15px;
-      font-size: 15px;
-      outline: none;
-      box-sizing: border-box;
+    .download-box {
+      background: #131b27; border: 1px solid #1e2a3a; border-radius: 20px;
+      padding: 24px; max-width: 480px; margin: 0 auto;
     }
+    .input-wrap {
+      display: flex; align-items: center; background: #0d1117;
+      border: 1px solid #1e2a3a; border-radius: 12px; padding: 4px 12px; margin-bottom: 14px;
+    }
+    .input-wrap input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: #fff; font-size: 15px; padding: 12px 8px;
+    }
+    .input-wrap input::placeholder { color: #4a5568; }
+    .input-wrap i { color: #4a5568; cursor: pointer; font-size: 16px; }
+    .input-wrap i:hover { color: #3b82f6; }
 
-    button {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 10px;
-      background: #00c853;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-      font-weight: bold;
+    .btn-download {
+      width: 100%; padding: 15px; background: #2563eb; color: #fff;
+      border: none; border-radius: 12px; font-size: 16px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      gap: 10px; transition: background 0.2s;
     }
+    .btn-download:hover { background: #1d4ed8; }
+    .btn-download:disabled { background: #1e3a5f; cursor: not-allowed; }
 
-    button:hover {
-      opacity: 0.9;
-    }
+    .tags { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 28px auto 0; max-width: 480px; }
+    .tag { display: flex; align-items: center; gap: 8px; border: 1px solid; border-radius: 999px; padding: 8px 16px; font-size: 13px; font-weight: 600; }
+    .tag.green { border-color: #166534; color: #4ade80; }
+    .tag.yellow { border-color: #854d0e; color: #facc15; }
+    .tag.blue { border-color: #1e3a5f; color: #60a5fa; }
+    .tag.purple { border-color: #4c1d95; color: #c084fc; }
 
-    #result {
-      margin-top: 20px;
-    }
+    #result { margin-top: 18px; text-align: center; }
+    .error-box { background: #2d0f0f; border: 1px solid #7f1d1d; border-radius: 12px; padding: 16px; color: #f87171; }
+    .success-box { background: #0f2d1f; border: 1px solid #166534; border-radius: 12px; padding: 16px; color: #4ade80; font-weight: 600; }
+    .processing-box { background: #0f1e2d; border: 1px solid #1e3a5f; border-radius: 12px; padding: 16px; color: #93c5fd; }
 
-    a {
-      color: #00e676;
-      word-break: break-all;
-    }
+    .spinner { display: inline-block; width: 18px; height: 18px; border: 3px solid #ffffff44; border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .progress-bar-wrap { background: #1e2a3a; border-radius: 999px; height: 6px; margin-top: 12px; overflow: hidden; }
+    .progress-bar { height: 100%; background: #2563eb; border-radius: 999px; animation: progress 90s linear forwards; }
+    @keyframes progress { from { width: 0%; } to { width: 95%; } }
+
+    section { padding: 60px 24px; }
+    section h2 { text-align: center; font-size: 26px; font-weight: 800; margin-bottom: 10px; }
+    section .sub { text-align: center; color: #8b9ab0; font-size: 15px; margin-bottom: 36px; }
+
+    .platforms { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; }
+    .platform-icon { font-size: 32px; opacity: 0.7; transition: opacity 0.2s; }
+    .platform-icon:hover { opacity: 1; }
+
+    .stats { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; padding: 40px 24px; border-top: 1px solid #1e2a3a; border-bottom: 1px solid #1e2a3a; }
+    .stat { text-align: center; }
+    .stat-num { font-size: 32px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+    .stat-num i { color: #3b82f6; font-size: 24px; }
+    .stat-label { color: #8b9ab0; font-size: 13px; margin-top: 4px; }
+
+    .steps { display: flex; flex-direction: column; gap: 28px; max-width: 400px; margin: 0 auto; }
+    .step { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; }
+    .step-icon-wrap { position: relative; display: inline-block; }
+    .step-icon { width: 72px; height: 72px; background: #131b27; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: #3b82f6; }
+    .step-num { position: absolute; bottom: -6px; right: -6px; width: 24px; height: 24px; background: #2563eb; border-radius: 50%; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .step h3 { font-size: 18px; font-weight: 700; }
+    .step p { color: #8b9ab0; font-size: 14px; line-height: 1.5; }
+
+    .features { display: flex; flex-direction: column; gap: 16px; max-width: 480px; margin: 0 auto; }
+    .feature-card { background: #131b27; border: 1px solid #1e2a3a; border-radius: 16px; padding: 20px; }
+    .feat-icon { width: 48px; height: 48px; background: #1e2a3a; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #3b82f6; margin-bottom: 14px; }
+    .feature-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+    .feature-card p { color: #8b9ab0; font-size: 14px; line-height: 1.5; }
+
+    footer { background: #0a0f18; border-top: 1px solid #1e2a3a; padding: 40px 24px 24px; }
+    .footer-top { display: flex; flex-direction: column; gap: 32px; margin-bottom: 32px; }
+    .footer-brand .brand-name { display: flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+    .footer-brand .brand-name i { color: #3b82f6; }
+    .footer-brand p { color: #8b9ab0; font-size: 13px; line-height: 1.6; max-width: 260px; }
+    .footer-social { display: flex; gap: 14px; margin-top: 16px; }
+    .footer-social a { width: 36px; height: 36px; background: #1e2a3a; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #8b9ab0; font-size: 16px; text-decoration: none; transition: all 0.2s; }
+    .footer-social a:hover { background: #2563eb; color: #fff; }
+    .footer-col h4 { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 14px; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-col ul li a { color: #8b9ab0; text-decoration: none; font-size: 14px; transition: color 0.2s; }
+    .footer-col ul li a:hover { color: #3b82f6; }
+    .footer-bottom { border-top: 1px solid #1e2a3a; padding-top: 20px; text-align: center; }
+    .made-by { font-size: 16px; font-weight: 700; color: #8b9ab0; margin-bottom: 6px; }
+    .made-by span { color: #3b82f6; }
+    .footer-copy { color: #4a5568; font-size: 13px; }
   </style>
 </head>
 <body>
 
-  <div class="box">
-    <h1>Fast Video Downloader 🚀</h1>
+  <nav>
+    <div class="nav-logo">
+      <i class="fa-solid fa-bolt-lightning"></i>
+      Fast Video Downloader
+    </div>
+  </nav>
 
-    <input
-      type="text"
-      id="url"
-      placeholder="Paste Instagram / Pinterest / TikTok URL"
-    />
+  <div class="hero">
+    <div class="badge"><span class="badge-dot"></span> 100% Free & Unlimited</div>
+    <h1>Download Any Video<br><span>Instantly</span></h1>
+    <p>The fastest way to save videos from across the web. No registration required. Download in HD with audio in seconds.</p>
 
-    <button onclick="downloadVideo()">
-      Download
-    </button>
+    <div class="download-box">
+      <div class="input-wrap">
+        <input type="text" id="url" placeholder="Paste video URL here..." />
+        <i class="fa-regular fa-clipboard" onclick="pasteURL()" title="Paste"></i>
+      </div>
+      <button class="btn-download" id="dlBtn" onclick="downloadVideo()">
+        <i class="fa-solid fa-download"></i> Download Now
+      </button>
+      <div id="result"></div>
+    </div>
 
-    <div id="result"></div>
+    <div class="tags">
+      <div class="tag green"><i class="fa-solid fa-shield-halved"></i> 100% Secure</div>
+      <div class="tag yellow"><i class="fa-solid fa-bolt"></i> Lightning Fast</div>
+      <div class="tag blue"><i class="fa-solid fa-gift"></i> Always Free</div>
+      <div class="tag purple"><i class="fa-solid fa-user-xmark"></i> No Signup</div>
+    </div>
   </div>
 
-  <script>
-    async function downloadVideo() {
-      const url = document.getElementById("url").value;
-      const result = document.getElementById("result");
+  <section>
+    <div class="sub">Supported platforms</div>
+    <div class="platforms">
+      <i class="fa-brands fa-youtube platform-icon" style="color:#ff0000"></i>
+      <i class="fa-brands fa-instagram platform-icon" style="color:#e1306c"></i>
+      <i class="fa-brands fa-tiktok platform-icon" style="color:#fff"></i>
+      <i class="fa-brands fa-pinterest platform-icon" style="color:#e60023"></i>
+      <i class="fa-brands fa-facebook platform-icon" style="color:#1877f2"></i>
+      <i class="fa-brands fa-twitter platform-icon" style="color:#1da1f2"></i>
+    </div>
+  </section>
 
-      result.innerHTML = "Processing...";
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num"><i class="fa-solid fa-download"></i> 2,847,193+</div>
+      <div class="stat-label">Videos Downloaded</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num"><i class="fa-solid fa-users"></i> 48,291+</div>
+      <div class="stat-label">Happy Users Today</div>
+    </div>
+  </div>
+
+  <section>
+    <h2>How It Works</h2>
+    <div class="sub">Download any video in three simple steps</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-icon-wrap">
+          <div class="step-icon"><i class="fa-solid fa-link"></i></div>
+          <div class="step-num">1</div>
+        </div>
+        <h3>Paste URL</h3>
+        <p>Copy the video link from your favorite platform and paste it into the box above.</p>
+      </div>
+      <div class="step">
+        <div class="step-icon-wrap">
+          <div class="step-icon"><i class="fa-solid fa-download"></i></div>
+          <div class="step-num">2</div>
+        </div>
+        <h3>Click Download</h3>
+        <p>Hit the Download Now button — our server will process and merge video with audio.</p>
+      </div>
+      <div class="step">
+        <div class="step-icon-wrap">
+          <div class="step-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+          <div class="step-num">3</div>
+        </div>
+        <h3>Saved!</h3>
+        <p>Video with full audio downloads directly to your device automatically.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Why Choose Us</h2>
+    <div class="sub">The most reliable video downloader on the web</div>
+    <div class="features">
+      <div class="feature-card">
+        <div class="feat-icon"><i class="fa-solid fa-bolt"></i></div>
+        <h3>Lightning Fast Speed</h3>
+        <p>Our optimized servers ensure your videos are processed and downloaded in seconds.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon"><i class="fa-solid fa-music"></i></div>
+        <h3>Full Audio & Video</h3>
+        <p>Download videos with complete audio — no muted videos, no missing sound.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <h3>Secure & Private</h3>
+        <p>Your privacy is protected. We don't store your downloads or track your activity.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon"><i class="fa-solid fa-infinity"></i></div>
+        <h3>Free Forever</h3>
+        <p>No subscriptions, no hidden fees. Download unlimited videos for free.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="brand-name"><i class="fa-solid fa-bolt-lightning"></i> Fast Video Downloader</div>
+        <p>The premium tool to download videos from your favorite platforms instantly, securely, and for free.</p>
+        <div class="footer-social">
+          <a href="#"><i class="fa-brands fa-pinterest"></i></a>
+          <a href="#"><i class="fa-brands fa-telegram"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#"><i class="fa-solid fa-envelope"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>PRODUCT</h4>
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Supported Platforms</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>GUIDES</h4>
+        <ul>
+          <li><a href="#">Instagram Reels</a></li>
+          <li><a href="#">YouTube Shorts</a></li>
+          <li><a href="#">TikTok Videos</a></li>
+          <li><a href="#">Pinterest Videos</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>LEGAL</h4>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="made-by">Made by <span>JAIDU ⚡</span></div>
+      <div class="footer-copy">© 2026 Fast Video Downloader · All rights reserved</div>
+    </div>
+  </footer>
+
+  <script>
+    async function pasteURL() {
+      try {
+        const text = await navigator.clipboard.readText();
+        document.getElementById('url').value = text;
+      } catch(e) {}
+    }
+
+    async function downloadVideo() {
+      const url = document.getElementById('url').value.trim();
+      const result = document.getElementById('result');
+      const btn = document.getElementById('dlBtn');
+
+      if (!url) {
+        result.innerHTML = '<div class="error-box">⚠️ Please paste a video URL first!</div>';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner"></div> Processing...';
+      result.innerHTML = `
+        <div class="processing-box">
+          <p>⚙️ Downloading & merging audio+video...</p>
+          <p style="font-size:12px;color:#4a5568;margin-top:6px;">This may take 30-60 seconds</p>
+          <div class="progress-bar-wrap"><div class="progress-bar"></div></div>
+        </div>`;
 
       try {
-        const response = await fetch("/download", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+        const response = await fetch('/download', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ url })
         });
 
-        const data = await response.json();
-
-        if (data.success) {
-          result.innerHTML = `
-            <p>Download Ready ✅</p>
-            <a href="${data.downloadUrl}" target="_blank">
-              Click Here To Download
-            </a>
-          `;
+        if (response.ok && response.headers.get('content-type')?.includes('video')) {
+          // Direct file download
+          const blob = await response.blob();
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = 'video.mp4';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          result.innerHTML = '<div class="success-box">✅ Video downloaded successfully with audio!</div>';
         } else {
-          result.innerHTML = `
-            <p>${data.error || "Failed to download"}</p>
-          `;
+          const data = await response.json();
+          result.innerHTML = `<div class="error-box">❌ ${data.error || 'Download failed'}</div>`;
         }
-
-      } catch (error) {
-        result.innerHTML = `
-          <p>Something went wrong</p>
-        `;
+      } catch(e) {
+        result.innerHTML = '<div class="error-box">❌ Something went wrong. Try again.</div>';
       }
+
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-download"></i> Download Now';
     }
+
+    document.getElementById('url').addEventListener('keydown', e => {
+      if (e.key === 'Enter') downloadVideo();
+    });
   </script>
 
 </body>
