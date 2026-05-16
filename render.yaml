@@ -3,7 +3,7 @@ services:
     name: fast-video-downloader
     env: node
     plan: free
-    buildCommand: npm install && curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o ./yt-dlp && chmod +x ./yt-dlp
+    buildCommand: npm install && curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o ./yt-dlp && chmod +x ./yt-dlp && curl -L https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz | tar xJ && mv ffmpeg-*-amd64-static/ffmpeg ./ffmpeg && mv ffmpeg-*-amd64-static/ffprobe ./ffprobe
     startCommand: node server.js
     envVars:
       - key: NODE_VERSION
