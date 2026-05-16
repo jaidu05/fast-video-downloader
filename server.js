@@ -31,7 +31,8 @@ app.post("/download", async (req, res) => {
       });
     }
 
-    const response = await fetch("https://api.cobalt.tools/", {
+    // API request
+    const response = await fetch("https://co.wuk.sh/api/json", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -44,36 +45,32 @@ app.post("/download", async (req, res) => {
 
     const data = await response.json();
 
-    console.log(data);
+    console.log("API RESPONSE:", data);
 
-    // direct stream
-    if (
-      data.status === "redirect" ||
-      data.status === "stream" ||
-      data.status === "tunnel"
-    ) {
+    // Success
+    if (data.url) {
       return res.json({
         success: true,
         downloadUrl: data.url
       });
     }
 
-    // picker mode
-    if (data.status === "picker") {
+    // Picker support
+    if (data.picker && data.picker.length > 0) {
       return res.json({
         success: true,
-        downloadUrl: data.picker?.[0]?.url
+        downloadUrl: data.picker[0].url
       });
     }
 
-    // fail
+    // Fail
     return res.status(400).json({
       success: false,
-      error: data.error?.code || "Could not fetch media"
+      error: data.error || data.text || "Could not fetch media"
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("SERVER ERROR:", error);
 
     return res.status(500).json({
       success: false,
