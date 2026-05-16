@@ -20,12 +20,16 @@ app.post("/download", (req, res) => {
     return res.status(400).json({ success: false, error: "URL required" });
   }
 
-  const command = `yt-dlp --no-playlist -g "${url.trim()}"`;
+  // yt-dlp project folder mein hai
+  const ytdlp = path.join(__dirname, "yt-dlp");
+  const command = `"${ytdlp}" --no-playlist -g "${url.trim()}"`;
 
   exec(command, { timeout: 60000 }, (error, stdout, stderr) => {
+    console.log("stdout:", stdout);
+    console.log("stderr:", stderr);
+    
     if (error) {
       console.error("ERROR:", error.message);
-      console.error("STDERR:", stderr);
       return res.status(500).json({ success: false, error: stderr || error.message });
     }
 
