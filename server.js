@@ -21,25 +21,28 @@ app.post("/download", (req, res) => {
   const ytdlp = path.join(__dirname, "yt-dlp");
   const ffmpeg = path.join(__dirname, "ffmpeg");
   const tmpFile = path.join(os.tmpdir(), `video_${Date.now()}.mp4`);
+  const trimmedUrl = url.trim();
 
-  // Best video + best audio merge karke mp4 mein save karo
-  const cmd = `"${ytdlp}" --no-playlist --ffmpeg-location "${ffmpeg}" -f "bestvideo+bestaudio/best" --merge-output-format mp4 -o "${tmpFile}" "${url.trim()}"`;
+  const isYouTube = trimmedUrl.includes("youtube.com") || trimmedUrl.includes("youtu.be");
+  const isPinterest = trimmedUrl.includes("pinterest.com") || trimmedUrl.includes("pin.it");
 
-  console.log("Downloading:", url);
+  let formatFlag = `-f "bestvideo+bestaudio/best"`;
+  if (isYouTube) formatFlag = `-f "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best"`;
+  if (isPinterest) formatFlag = `-f "best[ext=mp4]/best"`;
 
-  exec(cmd, { timeout: 120000 }, (error, stdout, stderr) => {
+  const cmd = `"${ytdlp}" --no-playlist --ffmpeg-location "${ffmpeg}" ${formatFlag} --merge-output-format mp4 -o "${tmpFile}" "${trimmedUrl}" --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36" --no-check-certificate`;
+
+  console.log("Downloading:", trimmedUrl);
+
+  exec(cmd, { timeout: 180000 }, (error, stdout, stderr) => {
     if (error) {
       console.error("ERROR:", stderr);
-      // Cleanup
       if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
       return res.status(500).json({ success: false, error: "Download failed. Try another URL." });
     }
-
     if (!fs.existsSync(tmpFile)) {
       return res.status(500).json({ success: false, error: "File not created" });
     }
-
-    // File seedha download karwa do
     res.download(tmpFile, "video.mp4", (err) => {
       fs.unlink(tmpFile, () => {});
       if (err) console.error("Send error:", err.message);
