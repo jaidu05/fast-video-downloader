@@ -371,6 +371,8 @@
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
+          // Blob URL turant revoke karo — "Download again" popup nahi aayega
+          setTimeout(() => URL.revokeObjectURL(a.href), 100);
           result.innerHTML = '<div class="success-box">✅ Video downloaded successfully with audio!</div>';
           // URL clear karo next download ke liye
           document.getElementById('url').value = '';
