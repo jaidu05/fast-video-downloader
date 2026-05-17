@@ -12,6 +12,8 @@
     gtag('config', 'G-11KL9TTDP2');
   </script>
   <title>Fast Video Downloader</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -371,6 +373,10 @@
           a.click();
           document.body.removeChild(a);
           result.innerHTML = '<div class="success-box">✅ Video downloaded successfully with audio!</div>';
+          // URL clear karo next download ke liye
+          document.getElementById('url').value = '';
+          document.getElementById('platformBadge').style.display = 'none';
+          setTimeout(() => { result.innerHTML = ''; }, 4000);
         } else {
           const data = await response.json();
           result.innerHTML = `<div class="error-box">❌ ${data.error || 'Download failed'}</div>`;
