@@ -321,3 +321,51 @@
         }
       }
       badge.sty
+      le.display = 'none';
+    }
+
+    async function pasteURL() {
+      try {
+        const text = await navigator.clipboard.readText();
+        document.getElementById('url').value = text;
+        detectPlatform(text);
+      } catch(e) {}
+    }
+
+    async function downloadVideo() {
+      const url = document.getElementById('url').value.trim();
+      const result = document.getElementById('result');
+      const btn = document.getElementById('dlBtn');
+      if (!url) { result.innerHTML = '<div class="error-box">Please paste a URL first!</div>'; return; }
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner"></div> Processing...';
+      result.innerHTML = '<div class="processing-box"><p>Downloading...</p><p style="font-size:12px;color:#4a5568;margin-top:6px;">30-60 seconds</p><div class="progress-bar-wrap"><div class="progress-bar"></div></div></div>';
+      try {
+        const response = await fetch('/download', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url }) });
+        if (response.ok && response.headers.get('content-type') && response.headers.get('content-type').includes('video')) {
+          const blob = await response.blob();
+          const blobUrl = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = blobUrl;
+          a.download = 'video_' + Date.now() + '.mp4';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(function() { URL.revokeObjectURL(blobUrl); }, 1000);
+          result.innerHTML = '<div class="success-box">Video downloaded successfully!</div>';
+          document.getElementById('url').value = '';
+          document.getElementById('platformBadge').style.display = 'none';
+          setTimeout(function() { result.innerHTML = ''; }, 4000);
+        } else {
+          const data = await response.json();
+          result.innerHTML = '<div class="error-box">' + (data.error || 'Download failed') + '</div>';
+        }
+      } catch(e) { result.innerHTML = '<div class="error-box">Something went wrong.</div>'; }
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-download"></i> Download Now';
+    }
+
+    document.getElementById('url').addEventListener('keydown', function(e) { if (e.key === 'Enter') downloadVideo(); });
+  </script>
+</body>
+</html>
