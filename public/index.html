@@ -11,7 +11,23 @@
     gtag('js', new Date());
     gtag('config', 'G-11KL9TTDP2');
   </script>
-  <title>Fast Video Downloader</title>
+  <title>Fast Video Downloader - Instagram, Pinterest, Facebook, Snapchat Video Downloader</title>
+  <meta name="description" content="Download Instagram Reels, Pinterest Videos, Facebook Videos, Snapchat Videos free online. No watermark, no signup, 100% free. Fast HD video downloader." />
+  <meta name="keywords" content="instagram reel downloader, pinterest video downloader, facebook video downloader, snapchat video downloader, reel downloader, instagram downloader, pinterest downloader, facebook reel downloader, video downloader online, free video downloader, HD video downloader, instagram reels download, pinterest videos download without watermark" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="JAIDU" />
+  <link rel="canonical" href="https://fast-video-downloader.onrender.com/" />
+
+  <!-- Open Graph (WhatsApp, Facebook preview) -->
+  <meta property="og:title" content="Fast Video Downloader - Download Any Video Free" />
+  <meta property="og:description" content="Download Instagram Reels, Pinterest, Facebook Videos free. No watermark, no signup!" />
+  <meta property="og:url" content="https://fast-video-downloader.onrender.com/" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Fast Video Downloader" />
+  <meta name="twitter:description" content="Download Instagram, Pinterest, Facebook videos free!" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230d1117'/><polygon points='60,5 25,55 48,55 40,95 75,45 52,45' fill='%233b82f6'/></svg>" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
@@ -260,6 +276,38 @@
     </div>
   </section>
 
+  <!-- SEO SECTION -->
+  <section style="background:#0a0f18;padding:40px 24px;border-top:1px solid #1e2a3a;">
+    <div style="max-width:480px;margin:0 auto;">
+      <h2 style="font-size:20px;font-weight:800;margin-bottom:20px;color:#fff;">Download Videos From Any Platform</h2>
+
+      <div style="margin-bottom:16px;">
+        <h3 style="color:#3b82f6;font-size:16px;margin-bottom:6px;">📸 Instagram Reel Downloader</h3>
+        <p style="color:#8b9ab0;font-size:14px;line-height:1.6;">Download Instagram Reels without watermark for free. No login required. Fast Instagram video downloader online.</p>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <h3 style="color:#e60023;font-size:16px;margin-bottom:6px;">📌 Pinterest Video Downloader</h3>
+        <p style="color:#8b9ab0;font-size:14px;line-height:1.6;">Download Pinterest videos and GIFs instantly. Free Pinterest downloader — no signup needed.</p>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <h3 style="color:#1877f2;font-size:16px;margin-bottom:6px;">📘 Facebook Video Downloader</h3>
+        <p style="color:#8b9ab0;font-size:14px;line-height:1.6;">Download Facebook Reels and videos in HD quality. Free Facebook video downloader online.</p>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <h3 style="color:#fffc00;font-size:16px;margin-bottom:6px;">👻 Snapchat Video Downloader</h3>
+        <p style="color:#8b9ab0;font-size:14px;line-height:1.6;">Download Snapchat videos and stories online. Free Snapchat downloader — works on any device.</p>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <h3 style="color:#4ade80;font-size:16px;margin-bottom:6px;">⚡ Fast & Free Video Downloader</h3>
+        <p style="color:#8b9ab0;font-size:14px;line-height:1.6;">The fastest free online video downloader. Download reels, videos and stories from Instagram, Pinterest, Facebook, Snapchat in HD quality. No registration, no watermark, 100% free forever.</p>
+      </div>
+    </div>
+  </section>
+
   <footer>
     <div class="footer-top">
       <div class="footer-brand">
@@ -320,80 +368,4 @@
       if (!url) { badge.style.display = 'none'; return; }
       for (const [key, p] of Object.entries(platforms)) {
         if (p.check(url)) {
-          badge.className = p.cls;
-          badge.innerHTML = `<i class="${p.icon}"></i> ${p.label}`;
-          badge.style.display = 'flex';
-          return;
-        }
-      }
-      badge.style.display = 'none';
-    }
-
-    async function pasteURL() {
-      try {
-        const text = await navigator.clipboard.readText();
-        document.getElementById('url').value = text;
-        detectPlatform(text);
-      } catch(e) {}
-    }
-
-    async function downloadVideo() {
-      const url = document.getElementById('url').value.trim();
-      const result = document.getElementById('result');
-      const btn = document.getElementById('dlBtn');
-
-      if (!url) {
-        result.innerHTML = '<div class="error-box">⚠️ Please paste a video URL first!</div>';
-        return;
-      }
-
-      btn.disabled = true;
-      btn.innerHTML = '<div class="spinner"></div> Processing...';
-      result.innerHTML = `
-        <div class="processing-box">
-          <p>⚙️ Downloading & merging audio+video...</p>
-          <p style="font-size:12px;color:#4a5568;margin-top:6px;">This may take 30-60 seconds</p>
-          <div class="progress-bar-wrap"><div class="progress-bar"></div></div>
-        </div>`;
-
-      try {
-        const response = await fetch('/download', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url })
-        });
-
-        if (response.ok && response.headers.get('content-type')?.includes('video')) {
-          const blob = await response.blob();
-          const a = document.createElement('a');
-          a.href = URL.createObjectURL(blob);
-          a.download = 'video.mp4';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          // Blob URL turant revoke karo — "Download again" popup nahi aayega
-          setTimeout(() => URL.revokeObjectURL(a.href), 100);
-          result.innerHTML = '<div class="success-box">✅ Video downloaded successfully with audio!</div>';
-          // URL clear karo next download ke liye
-          document.getElementById('url').value = '';
-          document.getElementById('platformBadge').style.display = 'none';
-          setTimeout(() => { result.innerHTML = ''; }, 4000);
-        } else {
-          const data = await response.json();
-          result.innerHTML = `<div class="error-box">❌ ${data.error || 'Download failed'}</div>`;
-        }
-      } catch(e) {
-        result.innerHTML = '<div class="error-box">❌ Something went wrong. Try again.</div>';
-      }
-
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fa-solid fa-download"></i> Download Now';
-    }
-
-    document.getElementById('url').addEventListener('keydown', e => {
-      if (e.key === 'Enter') downloadVideo();
-    });
-  </script>
-
-</body>
-</html>
+ 
