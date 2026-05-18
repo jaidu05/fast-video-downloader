@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-11KL9TTDP2"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -13,7 +12,7 @@
   </script>
   <title>Fast Video Downloader - Instagram, Pinterest, Facebook, Snapchat Video Downloader</title>
   <meta name="description" content="Download Instagram Reels, Pinterest Videos, Facebook Videos, Snapchat Videos free online. No watermark, no signup, 100% free. Fast HD video downloader." />
-  <meta name="keywords" content="instagram reel downloader, pinterest video downloader, facebook video downloader, snapchat video downloader, reel downloader, instagram downloader, pinterest downloader, facebook reel downloader, video downloader online, free video downloader, HD video downloader, instagram reels download, pinterest videos download without watermark" />
+  <meta name="keywords" content="instagram reel downloader, pinterest video downloader, facebook video downloader, snapchat video downloader, reel downloader, instagram downloader, pinterest downloader, facebook reel downloader, video downloader online, free video downloader, HD video downloader" />
   <meta name="robots" content="index, follow" />
   <meta name="author" content="JAIDU" />
   <link rel="canonical" href="https://fast-video-downloader.onrender.com/" />
@@ -28,24 +27,50 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0d1117; color: #fff; font-family: 'Segoe UI', Arial, sans-serif; min-height: 100vh; }
-    nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid #1e2a3a; position: sticky; top: 0; background: #0d1117; z-index: 100; }
+    body { background: #0d1117; color: #fff; font-family: 'Segoe UI', Arial, sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+    /* PAGE LOAD ANIMATIONS */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes progress { from { width: 0%; } to { width: 95%; } }
+    @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    @keyframes glow { 0%,100% { box-shadow: 0 0 0px rgba(59,130,246,0); } 50% { box-shadow: 0 0 20px rgba(59,130,246,0.4); } }
+    @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+    @keyframes confettiFall { 0% { transform: translateY(-10px) rotate(0deg); opacity: 1; } 100% { transform: translateY(300px) rotate(720deg); opacity: 0; } }
+
+    /* SCROLL ANIMATIONS */
+    .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid #1e2a3a; position: sticky; top: 0; background: #0d1117; z-index: 100; animation: slideDown 0.5s ease; }
     .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; }
-    .nav-logo i { color: #3b82f6; font-size: 22px; }
-    .hero { text-align: center; padding: 60px 24px 40px; }
+    .nav-logo i { color: #3b82f6; font-size: 22px; animation: bounce 2s infinite; }
+
+    .hero { text-align: center; padding: 60px 24px 40px; animation: fadeUp 0.7s ease; }
     .badge { display: inline-flex; align-items: center; gap: 8px; background: #1e2a3a; border: 1px solid #2a3f57; border-radius: 999px; padding: 8px 18px; font-size: 14px; color: #93c5fd; margin-bottom: 28px; }
-    .badge-dot { width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; }
+    .badge-dot { width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; animation: pulse 1.5s infinite; }
     .hero h1 { font-size: 38px; font-weight: 800; line-height: 1.2; margin-bottom: 20px; }
     .hero h1 span { color: #3b82f6; }
     .hero p { color: #8b9ab0; font-size: 16px; max-width: 380px; margin: 0 auto 40px; line-height: 1.6; }
-    .download-box { background: #131b27; border: 1px solid #1e2a3a; border-radius: 20px; padding: 24px; max-width: 480px; margin: 0 auto; }
-    .input-wrap { display: flex; align-items: center; background: #0d1117; border: 1px solid #1e2a3a; border-radius: 12px; padding: 4px 12px; margin-bottom: 10px; }
+
+    .download-box { background: #131b27; border: 1px solid #1e2a3a; border-radius: 20px; padding: 24px; max-width: 480px; margin: 0 auto; transition: border-color 0.3s; animation: fadeUp 0.9s ease; }
+    .download-box.glow-instagram { border-color: #831843; box-shadow: 0 0 20px rgba(131,24,67,0.3); }
+    .download-box.glow-pinterest { border-color: #7f1d1d; box-shadow: 0 0 20px rgba(230,0,35,0.3); }
+    .download-box.glow-facebook { border-color: #1e3a5f; box-shadow: 0 0 20px rgba(24,119,242,0.3); }
+    .download-box.glow-snapchat { border-color: #854d0e; box-shadow: 0 0 20px rgba(255,252,0,0.2); }
+    .download-box.glow-youtube { border-color: #7f1d1d; box-shadow: 0 0 20px rgba(255,0,0,0.3); }
+
+    .input-wrap { display: flex; align-items: center; background: #0d1117; border: 1px solid #1e2a3a; border-radius: 12px; padding: 4px 12px; margin-bottom: 10px; transition: border-color 0.3s; }
+    .input-wrap:focus-within { border-color: #3b82f6; }
     .input-wrap input { flex: 1; background: transparent; border: none; outline: none; color: #fff; font-size: 15px; padding: 12px 8px; }
     .input-wrap input::placeholder { color: #4a5568; }
-    .input-wrap i { color: #4a5568; cursor: pointer; font-size: 16px; }
-    .input-wrap i:hover { color: #3b82f6; }
+    .input-wrap i { color: #4a5568; cursor: pointer; font-size: 16px; transition: color 0.2s, transform 0.2s; }
+    .input-wrap i:hover { color: #3b82f6; transform: scale(1.2); }
+
     #platformBadge { display: none; align-items: center; gap: 8px; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-weight: 600; margin-bottom: 12px; animation: fadeIn 0.3s ease; }
-    @keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
     #platformBadge.youtube { background:#1a0a0a; border:1px solid #7f1d1d; color:#f87171; }
     #platformBadge.instagram { background:#1a0a14; border:1px solid #831843; color:#f9a8d4; }
     #platformBadge.pinterest { background:#1a0a0a; border:1px solid #7f1d1d; color:#fca5a5; }
@@ -53,47 +78,70 @@
     #platformBadge.facebook { background:#0a0f1a; border:1px solid #1e3a5f; color:#93c5fd; }
     #platformBadge.snapchat { background:#1a1a0a; border:1px solid #854d0e; color:#fde68a; }
     #platformBadge i { font-size: 18px; }
-    .btn-download { width: 100%; padding: 15px; background: #2563eb; color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background 0.2s; }
-    .btn-download:hover { background: #1d4ed8; }
-    .btn-download:disabled { background: #1e3a5f; cursor: not-allowed; }
-    .tags { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 28px auto 0; max-width: 480px; }
-    .tag { display: flex; align-items: center; gap: 8px; border: 1px solid; border-radius: 999px; padding: 8px 16px; font-size: 13px; font-weight: 600; }
+
+    .btn-download { width: 100%; padding: 15px; background: #2563eb; color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background 0.2s, transform 0.1s; position: relative; overflow: hidden; }
+    .btn-download:hover { background: #1d4ed8; transform: translateY(-1px); }
+    .btn-download:active { transform: translateY(1px); }
+    .btn-download:disabled { background: #1e3a5f; cursor: not-allowed; transform: none; }
+    .btn-ripple { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.3); width: 20px; height: 20px; animation: ripple 0.6s linear; pointer-events: none; }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 28px auto 0; max-width: 480px; animation: fadeUp 1.1s ease; }
+    .tag { display: flex; align-items: center; gap: 8px; border: 1px solid; border-radius: 999px; padding: 8px 16px; font-size: 13px; font-weight: 600; transition: transform 0.2s; }
+    .tag:hover { transform: scale(1.05); }
     .tag.green { border-color: #166534; color: #4ade80; }
     .tag.yellow { border-color: #854d0e; color: #facc15; }
     .tag.blue { border-color: #1e3a5f; color: #60a5fa; }
     .tag.purple { border-color: #4c1d95; color: #c084fc; }
+
     #result { margin-top: 18px; text-align: center; }
-    .error-box { background: #2d0f0f; border: 1px solid #7f1d1d; border-radius: 12px; padding: 16px; color: #f87171; }
-    .success-box { background: #0f2d1f; border: 1px solid #166534; border-radius: 12px; padding: 16px; color: #4ade80; font-weight: 600; }
-    .processing-box { background: #0f1e2d; border: 1px solid #1e3a5f; border-radius: 12px; padding: 16px; color: #93c5fd; }
+    .error-box { background: #2d0f0f; border: 1px solid #7f1d1d; border-radius: 12px; padding: 16px; color: #f87171; animation: fadeIn 0.3s ease; }
+    .success-box { background: #0f2d1f; border: 1px solid #166534; border-radius: 12px; padding: 16px; color: #4ade80; font-weight: 600; animation: fadeIn 0.3s ease; }
+    .processing-box { background: #0f1e2d; border: 1px solid #1e3a5f; border-radius: 12px; padding: 16px; color: #93c5fd; animation: fadeIn 0.3s ease; }
     .spinner { display: inline-block; width: 18px; height: 18px; border: 3px solid #ffffff44; border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
     .progress-bar-wrap { background: #1e2a3a; border-radius: 999px; height: 6px; margin-top: 12px; overflow: hidden; }
-    .progress-bar { height: 100%; background: #2563eb; border-radius: 999px; animation: progress 90s linear forwards; }
-    @keyframes progress { from { width: 0%; } to { width: 95%; } }
+    .progress-bar { height: 100%; background: linear-gradient(90deg, #2563eb, #60a5fa); border-radius: 999px; animation: progress 90s linear forwards; }
+
     section { padding: 60px 24px; }
     section h2 { text-align: center; font-size: 26px; font-weight: 800; margin-bottom: 10px; }
     section .sub { text-align: center; color: #8b9ab0; font-size: 15px; margin-bottom: 36px; }
+
     .platforms { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; }
-    .platform-icon { font-size: 32px; opacity: 0.7; transition: opacity 0.2s; }
-    .platform-icon:hover { opacity: 1; }
-    .stats { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; padding: 40px 24px; border-top: 1px solid #1e2a3a; border-bottom: 1px solid #1e2a3a; }
-    .stat { text-align: center; }
-    .stat-num { font-size: 32px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
-    .stat-num i { color: #3b82f6; font-size: 24px; }
-    .stat-label { color: #8b9ab0; font-size: 13px; margin-top: 4px; }
+    .platform-icon { font-size: 32px; opacity: 0.7; transition: opacity 0.2s, transform 0.2s; }
+    .platform-icon:hover { opacity: 1; transform: scale(1.2) rotate(-5deg); }
+
     .steps { display: flex; flex-direction: column; gap: 28px; max-width: 400px; margin: 0 auto; }
     .step { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; }
     .step-icon-wrap { position: relative; display: inline-block; }
-    .step-icon { width: 72px; height: 72px; background: #131b27; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: #3b82f6; }
+    .step-icon { width: 72px; height: 72px; background: #131b27; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: #3b82f6; transition: transform 0.3s; }
+    .step:hover .step-icon { transform: scale(1.1); }
     .step-num { position: absolute; bottom: -6px; right: -6px; width: 24px; height: 24px; background: #2563eb; border-radius: 50%; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
     .step h3 { font-size: 18px; font-weight: 700; }
     .step p { color: #8b9ab0; font-size: 14px; line-height: 1.5; }
+
     .features { display: flex; flex-direction: column; gap: 16px; max-width: 480px; margin: 0 auto; }
-    .feature-card { background: #131b27; border: 1px solid #1e2a3a; border-radius: 16px; padding: 20px; }
+    .feature-card { background: #131b27; border: 1px solid #1e2a3a; border-radius: 16px; padding: 20px; transition: transform 0.2s, border-color 0.2s; }
+    .feature-card:hover { transform: translateY(-4px); border-color: #3b82f6; }
     .feat-icon { width: 48px; height: 48px; background: #1e2a3a; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #3b82f6; margin-bottom: 14px; }
     .feature-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
     .feature-card p { color: #8b9ab0; font-size: 14px; line-height: 1.5; }
+
+    /* FAQ */
+    .faq-list { max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+    .faq-item { background: #131b27; border: 1px solid #1e2a3a; border-radius: 14px; overflow: hidden; }
+    .faq-q { padding: 16px 20px; font-weight: 700; font-size: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; }
+    .faq-q:hover { background: #1e2a3a; }
+    .faq-q i { transition: transform 0.3s; color: #3b82f6; }
+    .faq-item.open .faq-q i { transform: rotate(180deg); }
+    .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s; color: #8b9ab0; font-size: 14px; line-height: 1.6; padding: 0 20px; }
+    .faq-item.open .faq-a { max-height: 200px; padding: 0 20px 16px; }
+
+    /* SEO SECTION */
+    .seo-section { background: #0a0f18; padding: 40px 24px; border-top: 1px solid #1e2a3a; }
+    .seo-section .inner { max-width: 480px; margin: 0 auto; }
+    .seo-block { margin-bottom: 16px; }
+    .seo-block h3 { font-size: 16px; margin-bottom: 6px; }
+    .seo-block p { color: #8b9ab0; font-size: 14px; line-height: 1.6; }
+
     footer { background: #0a0f18; border-top: 1px solid #1e2a3a; padding: 40px 24px 24px; }
     .footer-top { display: flex; flex-direction: column; gap: 32px; margin-bottom: 32px; }
     .footer-brand .brand-name { display: flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 700; margin-bottom: 10px; }
@@ -101,7 +149,7 @@
     .footer-brand p { color: #8b9ab0; font-size: 13px; line-height: 1.6; max-width: 260px; }
     .footer-social { display: flex; gap: 14px; margin-top: 16px; }
     .footer-social a { width: 36px; height: 36px; background: #1e2a3a; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #8b9ab0; font-size: 16px; text-decoration: none; transition: all 0.2s; }
-    .footer-social a:hover { background: #2563eb; color: #fff; }
+    .footer-social a:hover { background: #2563eb; color: #fff; transform: translateY(-2px); }
     .footer-col h4 { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 14px; }
     .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
     .footer-col ul li a { color: #8b9ab0; text-decoration: none; font-size: 14px; transition: color 0.2s; }
@@ -110,6 +158,9 @@
     .made-by { font-size: 16px; font-weight: 700; color: #8b9ab0; margin-bottom: 6px; }
     .made-by span { color: #3b82f6; }
     .footer-copy { color: #4a5568; font-size: 13px; }
+
+    /* CONFETTI */
+    .confetti-piece { position: fixed; width: 8px; height: 8px; border-radius: 2px; pointer-events: none; z-index: 9999; animation: confettiFall 1.5s ease forwards; }
   </style>
 </head>
 <body>
@@ -126,13 +177,13 @@
     <h1>Download Any Video<br><span>Instantly</span></h1>
     <p>The fastest way to save videos from across the web. No registration required. Download in HD with audio in seconds.</p>
 
-    <div class="download-box">
+    <div class="download-box" id="downloadBox">
       <div class="input-wrap">
         <input type="text" id="url" placeholder="Paste video URL here..." oninput="detectPlatform(this.value)" />
         <i class="fa-regular fa-clipboard" onclick="pasteURL()" title="Paste"></i>
       </div>
       <div id="platformBadge"></div>
-      <button class="btn-download" id="dlBtn" onclick="downloadVideo()">
+      <button class="btn-download" id="dlBtn" onclick="downloadVideo(event)">
         <i class="fa-solid fa-download"></i> Download Now
       </button>
       <div id="result"></div>
@@ -146,7 +197,7 @@
     </div>
   </div>
 
-  <section>
+  <section class="reveal">
     <div class="sub">Supported platforms</div>
     <div class="platforms">
       <i class="fa-brands fa-youtube platform-icon" style="color:#ff0000"></i>
@@ -158,18 +209,7 @@
     </div>
   </section>
 
-  <div class="stats">
-    <div class="stat">
-      <div class="stat-num"><i class="fa-solid fa-download"></i> 2,847,193+</div>
-      <div class="stat-label">Videos Downloaded</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num"><i class="fa-solid fa-users"></i> 48,291+</div>
-      <div class="stat-label">Happy Users Today</div>
-    </div>
-  </div>
-
-  <section>
+  <section class="reveal">
     <h2>How It Works</h2>
     <div class="sub">Download any video in three simple steps</div>
     <div class="steps">
@@ -200,7 +240,7 @@
     </div>
   </section>
 
-  <section>
+  <section class="reveal">
     <h2>Why Choose Us</h2>
     <div class="sub">The most reliable video downloader on the web</div>
     <div class="features">
@@ -227,145 +267,49 @@
     </div>
   </section>
 
-  <section style="background:#0a0f18;padding:40px 24px;border-top:1px solid #1e2a3a;">
-    <div style="max-width:480px;margin:0 auto;">
-      <h2 style="font-size:20px;font-weight:800;margin-bottom:20px;color:#fff;">Download Videos From Any Platform</h2>
-      <div style="margin-bottom:16px;">
-        <h3 style="color:#3b82f6;font-size:16px;margin-bottom:6px;">📸 Instagram Reel Downloader</h3>
-        <p style="color:#8b9ab0;font-size:14px;line-height:1.6;">Download Instagram Reels without watermark for free. No login required. Fast Instagram video downloader online.</p>
+  <!-- FAQ SECTION -->
+  <section class="reveal">
+    <h2>Frequently Asked Questions</h2>
+    <div class="sub">Got questions? We have answers!</div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">How do I download an Instagram Reel? <i class="fa-solid fa-chevron-down"></i></div>
+        <div class="faq-a">Copy the Instagram Reel link, paste it in the box above, and click Download Now. Your video will be saved automatically with full audio.</div>
       </div>
-      <div style="margin-bottom:16px;">
-        <h3 style="color:#e60023;font-size:16px;margin-bottom:6px;">📌 Pinterest Video Downloader</h3>
-        <p style="color:#8b9ab0;font-size:14px;line-height:1.6;">Download Pinterest videos and GIFs instantly. Free Pinterest downloader — no signup needed.</p>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Is this downloader free to use? <i class="fa-solid fa-chevron-down"></i></div>
+        <div class="faq-a">Yes! Fast Video Downloader is 100% free. No subscription, no hidden fees, no registration required. Download unlimited videos for free.</div>
       </div>
-      <div style="margin-bottom:16px;">
-        <h3 style="color:#1877f2;font-size:16px;margin-bottom:6px;">📘 Facebook Video Downloader</h3>
-        <p style="color:#8b9ab0;font-size:14px;line-height:1.6;">Download Facebook Reels and videos in HD quality. Free Facebook video downloader online.</p>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Which platforms are supported? <i class="fa-solid fa-chevron-down"></i></div>
+        <div class="faq-a">We support Instagram Reels, Pinterest Videos, Facebook Videos and Reels, Snapchat Videos, and many more platforms. More platforms coming soon!</div>
       </div>
-      <div style="margin-bottom:16px;">
-        <h3 style="color:#fffc00;font-size:16px;margin-bottom:6px;">👻 Snapchat Video Downloader</h3>
-        <p style="color:#8b9ab0;font-size:14px;line-height:1.6;">Download Snapchat videos and stories online. Free Snapchat downloader — works on any device.</p>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Why does download take 30-60 seconds? <i class="fa-solid fa-chevron-down"></i></div>
+        <div class="faq-a">Our server downloads the video and merges the audio track to give you the best quality. This process takes 30-60 seconds. Please be patient!</div>
       </div>
-      <div style="margin-bottom:16px;">
-        <h3 style="color:#4ade80;font-size:16px;margin-bottom:6px;">⚡ Fast & Free Video Downloader</h3>
-        <p style="color:#8b9ab0;font-size:14px;line-height:1.6;">The fastest free online video downloader. Download reels, videos and stories from Instagram, Pinterest, Facebook, Snapchat in HD quality. No registration, no watermark, 100% free forever.</p>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Is my privacy protected? <i class="fa-solid fa-chevron-down"></i></div>
+        <div class="faq-a">Absolutely! We do not store any videos or track your activity. All downloads are processed and immmediately deleted from our server.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Can I download videos on mobile? <i class="fa-solid fa-chevron-down"></i></div>
+        <div class="faq-a">Yes! Fast Video Downloader works perfectly on Android and iOS. No app installation needed — just open in your browser and download!</div>
       </div>
     </div>
   </section>
-
-  <footer>
-    <div class="footer-top">
-      <div class="footer-brand">
-        <div class="brand-name"><i class="fa-solid fa-bolt-lightning"></i> Fast Video Downloader</div>
-        <p>The premium tool to download videos from your favorite platforms instantly, securely, and for free.</p>
-        <div class="footer-social">
-          <a href="#"><i class="fa-brands fa-pinterest"></i></a>
-          <a href="#"><i class="fa-brands fa-telegram"></i></a>
-          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
-          <a href="#"><i class="fa-solid fa-envelope"></i></a>
-        </div>
-      </div>
-      <div class="footer-col">
-        <h4>PRODUCT</h4>
-        <ul>
-          <li><a href="#">Home</a></li>
-          <li><a href="#">About Us</a></li>
-          <li><a href="#">Contact</a></li>
-          <li><a href="#">Supported Platforms</a></li>
-          <li><a href="#">FAQ</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>GUIDES</h4>
-        <ul>
-          <li><a href="#">Instagram Reels</a></li>
-          <li><a href="#">YouTube Shorts</a></li>
-          <li><a href="#">Pinterest Videos</a></li>
-          <li><a href="#">Facebook Videos</a></li>
-          <li><a href="#">Snapchat Videos</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>LEGAL</h4>
-        <ul>
-          <li><a href="#">Privacy Policy</a></li>
-          <li><a href="#">Terms of Service</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <div class="made-by">Made by <span>JAIDU ⚡</span></div>
-      <div class="footer-copy">© 2026 Fast Video Downloader · All rights reserved</div>
-    </div>
-  </footer>
-
+  <div class="seo-section reveal"><div class="inner"><h2 style="font-size:20px;font-weight:800;margin-bottom:20px;color:#fff;">Download Videos From Any Platform</h2><div class="seo-block"><h3 style="color:#3b82f6;">📸 Instagram Reel Downloader</h3><p>Download Instagram Reels without watermark for free. No login required.</p></div><div class="seo-block"><h3 style="color:#e60023;">📌 Pinterest Video Downloader</h3><p>Download Pinterest videos and GIFs instantly. Free Pinterest downloader.</p></div><div class="seo-block"><h3 style="color:#1877f2;">📘 Facebook Video Downloader</h3><p>Download Facebook Reels and videos in HD quality. Free Facebook video downloader.</p></div><div class="seo-block"><h3 style="color:#fffc00;">👻 Snapchat Video Downloader</h3><p>Download Snapchat videos and stories online. Free Snapchat downloader.</p></div></div></div>
+  <footer><div class="footer-top"><div class="footer-brand"><div class="brand-name"><i class="fa-solid fa-bolt-lightning"></i> Fast Video Downloader</div><p>The premium tool to download videos from your favorite platforms instantly, securely, and for free.</p><div class="footer-social"><a href="#"><i class="fa-brands fa-pinterest"></i></a><a href="#"><i class="fa-brands fa-telegram"></i></a><a href="#"><i class="fa-brands fa-x-twitter"></i></a><a href="#"><i class="fa-solid fa-envelope"></i></a></div></div><div class="footer-col"><h4>PRODUCT</h4><ul><li><a href="#">Home</a></li><li><a href="#">About Us</a></li><li><a href="#">Contact</a></li><li><a href="#">FAQ</a></li></ul></div><div class="footer-col"><h4>GUIDES</h4><ul><li><a href="#">Instagram Reels</a></li><li><a href="#">Pinterest Videos</a></li><li><a href="#">Facebook Videos</a></li><li><a href="#">Snapchat Videos</a></li></ul></div><div class="footer-col"><h4>LEGAL</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li></ul></div></div><div class="footer-bottom"><div class="made-by">Made by <span>JAIDU ⚡</span></div><div class="footer-copy">© 2026 Fast Video Downloader · All rights reserved</div></div></footer>
   <script>
-    const platforms = {
-      youtube:   { check: u => u.includes("youtube.com") || u.includes("youtu.be"),    icon: "fa-brands fa-youtube",   cls: "youtube",   label: "YouTube Detected ✅" },
-      instagram: { check: u => u.includes("instagram.com"),                             icon: "fa-brands fa-instagram", cls: "instagram", label: "Instagram Detected ✅" },
-      pinterest: { check: u => u.includes("pinterest.com") || u.includes("pin.it"),    icon: "fa-brands fa-pinterest", cls: "pinterest", label: "Pinterest Detected ✅" },
-      snapchat:  { check: u => u.includes("snapchat.com") || u.includes("snap.com"),   icon: "fa-brands fa-snapchat",  cls: "snapchat",  label: "Snapchat Detected ✅" },
-      facebook:  { check: u => u.includes("facebook.com") || u.includes("fb.watch"),   icon: "fa-brands fa-facebook",  cls: "facebook",  label: "Facebook Detected ✅" },
-    };
-
-    function detectPlatform(val) {
-      const badge = document.getElementById('platformBadge');
-      const url = val.trim().toLowerCase();
-      if (!url) { badge.style.display = 'none'; return; }
-      for (const [key, p] of Object.entries(platforms)) {
-        if (p.check(url)) {
-          badge.className = p.cls;
-          badge.innerHTML = '<i class="' + p.icon + '"></i> ' + p.label;
-          badge.style.display = 'flex';
-          return;
-        }
-      }
-      badge.sty
-      le.display = 'none';
-    }
-
-    async function pasteURL() {
-      try {
-        const text = await navigator.clipboard.readText();
-        document.getElementById('url').value = text;
-        detectPlatform(text);
-      } catch(e) {}
-    }
-
-    async function downloadVideo() {
-      const url = document.getElementById('url').value.trim();
-      const result = document.getElementById('result');
-      const btn = document.getElementById('dlBtn');
-      if (!url) { result.innerHTML = '<div class="error-box">Please paste a URL first!</div>'; return; }
-      btn.disabled = true;
-      btn.innerHTML = '<div class="spinner"></div> Processing...';
-      result.innerHTML = '<div class="processing-box"><p>Downloading...</p><p style="font-size:12px;color:#4a5568;margin-top:6px;">30-60 seconds</p><div class="progress-bar-wrap"><div class="progress-bar"></div></div></div>';
-      try {
-        const response = await fetch('/download', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url }) });
-        if (response.ok && response.headers.get('content-type') && response.headers.get('content-type').includes('video')) {
-          const blob = await response.blob();
-          const blobUrl = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = blobUrl;
-          a.download = 'video_' + Date.now() + '.mp4';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          setTimeout(function() { URL.revokeObjectURL(blobUrl); }, 1000);
-          result.innerHTML = '<div class="success-box">Video downloaded successfully!</div>';
-          document.getElementById('url').value = '';
-          document.getElementById('platformBadge').style.display = 'none';
-          setTimeout(function() { result.innerHTML = ''; }, 4000);
-        } else {
-          const data = await response.json();
-          result.innerHTML = '<div class="error-box">' + (data.error || 'Download failed') + '</div>';
-        }
-      } catch(e) { result.innerHTML = '<div class="error-box">Something went wrong.</div>'; }
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fa-solid fa-download"></i> Download Now';
-    }
-
-    document.getElementById('url').addEventListener('keydown', function(e) { if (e.key === 'Enter') downloadVideo(); });
+    var platforms={youtube:{check:function(u){return u.includes("youtube.com")||u.includes("youtu.be")},icon:"fa-brands fa-youtube",cls:"youtube",label:"YouTube Detected"},instagram:{check:function(u){return u.includes("instagram.com")},icon:"fa-brands fa-instagram",cls:"instagram",label:"Instagram Detected"},pinterest:{check:function(u){return u.includes("pinterest.com")||u.includes("pin.it")},icon:"fa-brands fa-pinterest",cls:"pinterest",label:"Pinterest Detected"},snapchat:{check:function(u){return u.includes("snapchat.com")||u.includes("snap.com")},icon:"fa-brands fa-snapchat",cls:"snapchat",label:"Snapchat Detected"},facebook:{check:function(u){return u.includes("facebook.com")||u.includes("fb.watch")},icon:"fa-brands fa-facebook",cls:"facebook",label:"Facebook Detected"}};
+    function detectPlatform(val){var badge=document.getElementById('platformBadge');var box=document.getElementById('downloadBox');var url=val.trim().toLowerCase();if(!url){badge.style.display='none';box.className='download-box';return;}for(var key in platforms){var p=platforms[key];if(p.check(url)){badge.className=p.cls;badge.innerHTML='<i class="'+p.icon+'"></i> '+p.label+' ✅';badge.style.display='flex';box.className='download-box glow-'+p.cls;return;}}badge.style.display='none';box.className='download-box';}
+    async function pasteURL(){try{var text=await navigator.clipboard.readText();document.getElementById('url').value=text;detectPlatform(text);}catch(e){}}
+    function createRipple(event,btn){var ripple=document.createElement('span');ripple.className='btn-ripple';var rect=btn.getBoundingClientRect();ripple.style.left=(event.clientX-rect.left-10)+'px';ripple.style.top=(event.clientY-rect.top-10)+'px';btn.appendChild(ripple);setTimeout(function(){ripple.remove();},600);}
+    function launchConfetti(){var colors=['#3b82f6','#4ade80','#f9a8d4','#fde68a','#60a5fa'];for(var i=0;i<30;i++){(function(i){setTimeout(function(){var el=document.createElement('div');el.className='confetti-piece';el.style.left=Math.random()*100+'vw';el.style.top='-10px';el.style.background=colors[Math.floor(Math.random()*colors.length)];el.style.animationDelay=(Math.random()*0.5)+'s';document.body.appendChild(el);setTimeout(function(){el.remove();},2000);},i*50);})(i);}}
+    async function downloadVideo(event){var url=document.getElementById('url').value.trim();var result=document.getElementById('result');var btn=document.getElementById('dlBtn');if(event)createRipple(event,btn);if(!url){result.innerHTML='<div class="error-box">Please paste a video URL first!</div>';return;}btn.disabled=true;btn.innerHTML='<div class="spinner"></div> Processing...';result.innerHTML='<div class="processing-box"><p>Downloading & merging audio+video...</p><p style="font-size:12px;color:#4a5568;margin-top:6px;">30-60 seconds</p><div class="progress-bar-wrap"><div class="progress-bar"></div></div></div>';try{var response=await fetch('/download',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url})});if(response.ok&&response.headers.get('content-type')&&response.headers.get('content-type').includes('video')){var blob=await response.blob();var blobUrl=URL.createObjectURL(blob);var a=document.createElement('a');a.href=blobUrl;a.download='video_'+Date.now()+'.mp4';document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(blobUrl);},1000);launchConfetti();result.innerHTML='<div class="success-box">Video downloaded successfully!</div>';document.getElementById('url').value='';document.getElementById('platformBadge').style.display='none';document.getElementById('downloadBox').className='download-box';setTimeout(function(){result.innerHTML='';},5000);}else{var data=await response.json();result.innerHTML='<div class="error-box">'+(data.error||'Download failed')+'</div>';}}catch(e){result.innerHTML='<div class="error-box">Something went wrong.</div>';}btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-download"></i> Download Now';}
+    function toggleFaq(el){var item=el.parentElement;var allItems=document.querySelectorAll('.faq-item');allItems.forEach(function(i){if(i!==item)i.classList.remove('open');});item.classList.toggle('open');}
+    document.getElementById('url').addEventListener('keydown',function(e){if(e.key==='Enter')downloadVideo(null);});
+    var reveals=document.querySelectorAll('.reveal');var observer=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){entry.target.classList.add('visible');}});},{threshold:0.1});reveals.forEach(function(el){observer.observe(el);});
   </script>
 </body>
 </html>
