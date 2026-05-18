@@ -14,6 +14,12 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
+// Robots.txt — Google ke liye
+app.get("/robots.txt", (req, res) => {
+  res.type("text/plain");
+  res.send("User-agent: *\nAllow: /\n\nSitemap: https://fast-video-downloader.onrender.com/sitemap.xml");
+});
+
 app.post("/download", (req, res) => {
   const { url } = req.body;
   if (!url) return res.status(400).json({ success: false, error: "URL required" });
@@ -59,7 +65,7 @@ app.post("/download", (req, res) => {
   });
 });
 
-// Chhota response — cron-job ke liye
+// Health check — cron-job ke liye
 app.get("/health", (req, res) => res.send("ok"));
 
 const PORT = process.env.PORT || 10000;
