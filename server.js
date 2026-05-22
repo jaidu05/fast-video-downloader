@@ -20,6 +20,35 @@ app.get("/robots.txt", (req, res) => {
   res.send("User-agent: *\nAllow: /\n\nSitemap: https://fast-video-downloader.onrender.com/sitemap.xml");
 });
 
+// Video info — thumbnail + title fetch karo
+app.post("/info", (req, res) => {
+  const { url } = req.body;
+  if (!url) return res.status(400).json({ success: false, error: "URL required" });
+
+  const ytdlp = path.join(__dirname, "yt-dlp");
+  const trimmedUrl = url.trim();
+
+  const cmd = `"${ytdlp}" --no-playlist -J --no-check-certificate --user-agent "Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 Chrome/120.0.0.0 Mobile Safari/537.36" "${trimmedUrl}"`;
+
+  exec(cmd, { timeout: 30000 }, (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).json({ success: false, error: "Could not fetch video info" });
+    }
+    try {
+      const info = JSON.parse(stdout);
+      return res.json({
+        success: true,
+        title: info.title || "Video",
+        thumbnail: info.thumbnail || null,
+        duration: info.duration || null,
+        uploader: info.uploader || null
+      });
+    } catch(e) {
+      return res.status(500).json({ success: false, error: "Could not parse video info" });
+    }
+  });
+});
+
 app.post("/download", (req, res) => {
   const { url } = req.body;
   if (!url) return res.status(400).json({ success: false, error: "URL required" });
