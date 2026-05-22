@@ -69,10 +69,6 @@
     #platformBadge.snapchat{background:#1a1a0a;border:1px solid #854d0e;color:#fde68a}
     #platformBadge i{font-size:18px}
     .pinterest-warning{background:#1a0a0a;border:1px solid #7f1d1d;border-radius:10px;padding:10px 14px;font-size:12px;color:#fca5a5;margin-bottom:12px;display:none;animation:fadeIn 0.3s ease}
-    .thumbnail-box{background:#0d1117;border:1px solid #1e2a3a;border-radius:12px;padding:12px;margin-bottom:12px;display:none;animation:fadeIn 0.3s ease}
-    .thumbnail-box img{width:100%;border-radius:8px;max-height:200px;object-fit:cover}
-    .thumbnail-title{color:#fff;font-size:14px;font-weight:600;margin-top:8px;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-    .thumbnail-meta{color:#8b9ab0;font-size:12px;margin-top:4px}
     .btn-download{width:100%;padding:15px;background:#2563eb;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:background 0.2s,transform 0.1s;position:relative;overflow:hidden}
     .btn-download:hover{background:#1d4ed8;transform:translateY(-1px)}
     .btn-download:active{transform:translateY(1px)}
@@ -91,7 +87,8 @@
     .processing-box{background:#0f1e2d;border:1px solid #1e3a5f;border-radius:12px;padding:16px;color:#93c5fd;animation:fadeIn 0.3s ease}
     .spinner{display:inline-block;width:18px;height:18px;border:3px solid #ffffff44;border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite}
     .progress-bar-wrap{background:#1e2a3a;border-radius:999px;height:6px;margin-top:12px;overflow:hidden}
-    .progress-bar{height:100%;background:linear-gradient(90deg,#2563eb,#60a5fa);border-radius:999px;animation:progress 90s linear forwards}
+    .progress-bar{height:100%;background:linear-gradient(90deg,#2563eb,#60a5fa);border-radius:999px;animation:progress 60s linear forwards}
+    .step-msg{font-size:12px;color:#60a5fa;margin-top:8px}
     section{padding:60px 24px}
     section h2{text-align:center;font-size:26px;font-weight:800;margin-bottom:10px}
     section .sub{text-align:center;color:#8b9ab0;font-size:15px;margin-bottom:36px}
@@ -160,11 +157,6 @@
       </div>
       <div id="platformBadge"></div>
       <div class="pinterest-warning" id="pinterestWarning"><i class="fa-solid fa-triangle-exclamation"></i> Only direct Pinterest videos supported. Embedded/external videos may not work.</div>
-      <div class="thumbnail-box" id="thumbnailBox">
-        <img id="thumbImg" src="" alt="thumbnail" />
-        <div class="thumbnail-title" id="thumbTitle"></div>
-        <div class="thumbnail-meta" id="thumbMeta"></div>
-      </div>
       <button class="btn-download" id="dlBtn" onclick="downloadVideo(event)">
         <i class="fa-solid fa-download"></i> Download Now
       </button>
@@ -213,7 +205,7 @@
     <h2>Why Choose Us</h2>
     <div class="sub">The most reliable video downloader on the web</div>
     <div class="features">
-      <div class="feature-card"><div class="feat-icon"><i class="fa-solid fa-bolt"></i></div><h3>Lightning Fast Speed</h3><p>Our optimized servers ensure your videos are processed and downloaded in seconds.</p></div>
+      <div class="feature-card"><div class="feat-icon"><i class="fa-solid fa-bolt"></i></div><h3>Lightning Fast Speed</h3><p>Our optimized servers ensure your videos are processed and downloaded quickly.</p></div>
       <div class="feature-card"><div class="feat-icon"><i class="fa-solid fa-music"></i></div><h3>Full Audio & Video</h3><p>Download videos with complete audio — no muted videos, no missing sound.</p></div>
       <div class="feature-card"><div class="feat-icon"><i class="fa-solid fa-shield-halved"></i></div><h3>Secure & Private</h3><p>Your privacy is protected. We don't store your downloads or track your activity.</p></div>
       <div class="feature-card"><div class="feat-icon"><i class="fa-solid fa-infinity"></i></div><h3>Free Forever</h3><p>No subscriptions, no hidden fees. Download unlimited videos for free.</p></div>
@@ -244,6 +236,7 @@
       <div class="seo-block"><h3 style="color:#4ade80;">⚡ Fast & Free Video Downloader</h3><p>The fastest free online video downloader. Download reels, videos and stories from Instagram, Pinterest, Facebook, Snapchat in HD quality. No registration, no watermark, 100% free forever.</p></div>
     </div>
   </div>
+
   <footer>
     <div class="footer-top">
       <div class="footer-brand">
@@ -265,15 +258,15 @@
       <div class="footer-copy">© 2026 Fast Video Downloader · All rights reserved</div>
     </div>
   </footer>
+
   <script>
     var platforms={youtube:{check:function(u){return u.includes("youtube.com")||u.includes("youtu.be")},icon:"fa-brands fa-youtube",cls:"youtube",label:"YouTube Detected"},instagram:{check:function(u){return u.includes("instagram.com")},icon:"fa-brands fa-instagram",cls:"instagram",label:"Instagram Detected"},pinterest:{check:function(u){return u.includes("pinterest.com")||u.includes("pin.it")},icon:"fa-brands fa-pinterest",cls:"pinterest",label:"Pinterest Detected"},snapchat:{check:function(u){return u.includes("snapchat.com")||u.includes("snap.com")},icon:"fa-brands fa-snapchat",cls:"snapchat",label:"Snapchat Detected"},facebook:{check:function(u){return u.includes("facebook.com")||u.includes("fb.watch")},icon:"fa-brands fa-facebook",cls:"facebook",label:"Facebook Detected"}};
-    var fetchTimeout=null;
-    function detectPlatform(val){var badge=document.getElementById('platformBadge');var box=document.getElementById('downloadBox');var pWarn=document.getElementById('pinterestWarning');var thumbBox=document.getElementById('thumbnailBox');var url=val.trim().toLowerCase();if(!url){badge.style.display='none';box.className='download-box';pWarn.style.display='none';thumbBox.style.display='none';return;}for(var key in platforms){var p=platforms[key];if(p.check(url)){badge.className=p.cls;badge.innerHTML='<i class="'+p.icon+'"></i> '+p.label+' ✅';badge.style.display='flex';box.className='download-box glow-'+p.cls;pWarn.style.display=(key==='pinterest')?'block':'none';clearTimeout(fetchTimeout);fetchTimeout=setTimeout(function(){fetchInfo(val.trim());},800);return;}}badge.style.display='none';box.className='download-box';pWarn.style.display='none';thumbBox.style.display='none';}
-    function fetchInfo(url){fetch('/info',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url})}).then(function(r){return r.json();}).then(function(data){if(data.success&&data.thumbnail){document.getElementById('thumbImg').src=data.thumbnail;document.getElementById('thumbTitle').textContent=data.title||'';var meta='';if(data.uploader)meta+=data.uploader;if(data.duration)meta+=(meta?' · ':'')+Math.floor(data.duration/60)+':'+('0'+Math.floor(data.duration%60)).slice(-2);document.getElementById('thumbMeta').textContent=meta;document.getElementById('thumbnailBox').style.display='block';}}).catch(function(){});}
+    function detectPlatform(val){var badge=document.getElementById('platformBadge');var box=document.getElementById('downloadBox');var pWarn=document.getElementById('pinterestWarning');var url=val.trim().toLowerCase();if(!url){badge.style.display='none';box.className='download-box';pWarn.style.display='none';return;}for(var key in platforms){var p=platforms[key];if(p.check(url)){badge.className=p.cls;badge.innerHTML='<i class="'+p.icon+'"></i> '+p.label+' ✅';badge.style.display='flex';box.className='download-box glow-'+p.cls;pWarn.style.display=(key==='pinterest')?'block':'none';return;}}badge.style.display='none';box.className='download-box';pWarn.style.display='none';}
     async function pasteURL(){try{var text=await navigator.clipboard.readText();document.getElementById('url').value=text;detectPlatform(text);}catch(e){}}
     function createRipple(event,btn){var ripple=document.createElement('span');ripple.className='btn-ripple';var rect=btn.getBoundingClientRect();ripple.style.left=(event.clientX-rect.left-10)+'px';ripple.style.top=(event.clientY-rect.top-10)+'px';btn.appendChild(ripple);setTimeout(function(){ripple.remove();},600);}
     function launchConfetti(){var colors=['#3b82f6','#4ade80','#f9a8d4','#fde68a','#60a5fa'];for(var i=0;i<30;i++){(function(i){setTimeout(function(){var el=document.createElement('div');el.className='confetti-piece';el.style.left=Math.random()*100+'vw';el.style.top='-10px';el.style.background=colors[Math.floor(Math.random()*colors.length)];el.style.animationDelay=(Math.random()*0.5)+'s';document.body.appendChild(el);setTimeout(function(){el.remove();},2000);},i*50);})(i);}}
-    async function downloadVideo(event){var url=document.getElementById('url').value.trim();var result=document.getElementById('result');var btn=document.getElementById('dlBtn');if(event)createRipple(event,btn);if(!url){result.innerHTML='<div class="error-box">Please paste a video URL first!</div>';return;}btn.disabled=true;btn.innerHTML='<div class="spinner"></div> Processing...';result.innerHTML='<div class="processing-box"><p>Downloading & merging audio+video...</p><p style="font-size:12px;color:#4a5568;margin-top:6px;">This may take 30-60 seconds. Please wait!</p><div class="progress-bar-wrap"><div class="progress-bar"></div></div></div>';try{var response=await fetch('/download',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url})});if(response.ok&&response.headers.get('content-type')&&response.headers.get('content-type').includes('video')){var blob=await response.blob();var blobUrl=URL.createObjectURL(blob);var a=document.createElement('a');a.href=blobUrl;a.download='video_'+Date.now()+'.mp4';document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(blobUrl);},1000);launchConfetti();result.innerHTML='<div class="success-box">Video downloaded successfully with audio!</div>';document.getElementById('url').value='';document.getElementById('platformBadge').style.display='none';document.getElementById('downloadBox').className='download-box';document.getElementById('thumbnailBox').style.display='none';document.getElementById('pinterestWarning').style.display='none';setTimeout(function(){result.innerHTML='';},5000);}else{var data=await response.json();result.innerHTML='<div class="error-box">'+(data.error||'Download failed. Try another URL.')+'</div>';}}catch(e){result.innerHTML='<div class="error-box">Something went wrong. Try again.</div>';}btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-download"></i> Download Now';}
+    var stepMessages=['Connecting to platform...','Fetching video...','Downloading...','Merging audio & video...','Almost done...'];
+    async function downloadVideo(event){var url=document.getElementById('url').value.trim();var result=document.getElementById('result');var btn=document.getElementById('dlBtn');if(event)createRipple(event,btn);if(!url){result.innerHTML='<div class="error-box">Please paste a video URL first!</div>';return;}btn.disabled=true;btn.innerHTML='<div class="spinner"></div> Processing...';var msgIdx=0;result.innerHTML='<div class="processing-box"><p id="stepMsg">'+stepMessages[0]+'</p><p style="font-size:12px;color:#4a5568;margin-top:6px;">Please wait...</p><div class="progress-bar-wrap"><div class="progress-bar"></div></div></div>';var msgTimer=setInterval(function(){msgIdx++;if(msgIdx<stepMessages.length){var el=document.getElementById('stepMsg');if(el)el.textContent=stepMessages[msgIdx];}},8000);try{var response=await fetch('/download',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url})});clearInterval(msgTimer);if(response.ok&&response.headers.get('content-type')&&response.headers.get('content-type').includes('video')){var blob=await response.blob();var blobUrl=URL.createObjectURL(blob);var a=document.createElement('a');a.href=blobUrl;a.download='video_'+Date.now()+'.mp4';document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(blobUrl);},1000);launchConfetti();result.innerHTML='<div class="success-box">Video downloaded successfully with audio!</div>';document.getElementById('url').value='';document.getElementById('platformBadge').style.display='none';document.getElementById('downloadBox').className='download-box';document.getElementById('pinterestWarning').style.display='none';setTimeout(function(){result.innerHTML='';},5000);}else{var data=await response.json();result.innerHTML='<div class="error-box">'+(data.error||'Download failed. Try another URL.')+'</div>';}}catch(e){clearInterval(msgTimer);result.innerHTML='<div class="error-box">Something went wrong. Try again.</div>';}btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-download"></i> Download Now';}
     function toggleFaq(el){var item=el.parentElement;document.querySelectorAll('.faq-item').forEach(function(i){if(i!==item)i.classList.remove('open');});item.classList.toggle('open');}
     document.getElementById('url').addEventListener('keydown',function(e){if(e.key==='Enter')downloadVideo(null);});
     var observer=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting)entry.target.classList.add('visible');});},{threshold:0.1});
